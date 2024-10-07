@@ -1,0 +1,61 @@
+body{
+  background: rgb(0, 0, 0);
+  color: #fff;
+}
+.logo{
+  text-align: center;
+  text-transform: capitalize;
+  font-size: 4em;
+  cursor: pointer;
+}
+.inputContainer{
+  width: 100%;
+  background-color: rgb(255, 255, 255);
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  height: 150px;
+}
+.inputContainer .input{
+  width: 400px;
+  font-size: 1.4em;
+  text-transform: capitalize;
+  padding: 7px;
+  margin: 10px;
+  border-radius: 10px;
+  border: 2px solid black;
+  background: rgb(0, 0, 0);
+  color: #fff;
+  cursor: pointer;
+}
+
+.btnContainer{
+  display: flex;
+  justify-content: center;
+  background: rgb(255, 255, 255);
+}
+.btnContainer button{
+  font-size: 1.3em;
+  width: 150px;
+  padding: 4px;
+  background: #000000;
+  border-radius: 7px;
+  color: #fff;
+  margin: 10px;
+  cursor: pointer;
+}
+.contentContainer ul li{
+  font-size: 19px;
+  text-transform: capitalize;
+}
+.contentContainer ul li span{
+  font-size: 23px;
+  text-decoration: none;
+}
+.contentRemover button{
+  font-size: 16px;
+  padding: 7px;
+  background: #fff;
+  border: 5px;
+  cursor: pointer;
+}
