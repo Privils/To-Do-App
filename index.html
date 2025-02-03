@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="index.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <title>To do app</title>
+  </head>
+  <body 
+  data-aos="fade"
+     data-aos-easing="linear"
+     data-aos-duration="1000"
+     >
+    <header 
+    data-aos="fade"
+    data-aos-easing="linear"
+    data-aos-duration="1000"
+    >
+      <h1>to do app</h1>
+    </header>
+    <main>
+        <form 
+         data-aos="fade"
+        data-aos-easing="linear"
+        data-aos-duration="1000">
+            <input class="input-title" type="text" placeholder="Task title">
+            <input class="input-content" type="text" placeholder="Add task here">
+        </form>
+        <div class="add-btn-container"
+        data-aos="fade"
+        data-aos-easing="linear"
+        data-aos-duration="1000"
+        >
+            <button class="add-task-btn">add task</button>
+          </div>
+    </main>
+    <section>
+        <div>
+      <div class="container">
+    
+        <h1 class="title"
+        data-aos="fade-right"
+     data-aos-offset="300"
+     data-aos-easing="ease-in-sine"
+     data-aos-duration="1000"
+     >going to work</h1>
+        <div class="text-container"
+        data-aos="flip-down"
+        data-aos-easing="ease"
+        data-aos-duration="1000"
+        >
+         
+          <p class="description">
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Officia
+            facilis cum deleniti, qui reprehenderit provident aut impedit ullam,
+            doloribus blanditiis quaerat perferendis dolorum aspernatur magnam
+            corporis. Laboriosam, veniam. Voluptas, voluptatibus. 
+          </p>
+      <div class="btn-container">
+        <button class="btn">remove</button>
+      </div>
+      <p class="task-id">
+        task id: 1
+      </p>
+        </div>
+      </div>
+        </div>
+    </section>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+  AOS.init();
+</script>
+<script src="index.js"></script>
+  </body>
+</html>
