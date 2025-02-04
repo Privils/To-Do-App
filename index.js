@@ -63,7 +63,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     };
 
     // Add a new task
-    const addTask = async () => {
+   /* const addTask = async () => {
         const taskTitle = taskTitleInput.value.trim();
         const taskContent = taskContentInput.value.trim();
       
@@ -105,7 +105,83 @@ document.addEventListener("DOMContentLoaded", async () => {
         } else {
             alert("Failed to add task.");
         }
+    };*/
+
+
+    const addTask = async (e) => {
+        e.preventDefault(); // Prevent form submission or page reload on button click
+    
+        const taskTitle = taskTitleInput.value.trim();
+        const taskContent = taskContentInput.value.trim();
+    
+        // Check for title length (max 20 characters)
+        if (taskTitle.length > 20) {
+            alert("Title should not exceed 20 characters.");
+            return;  // Stop further execution if validation fails
+        }
+    
+        // Check for description length (max 100 characters)
+        if (taskContent.length > 100) {
+            alert("Description should not exceed 100 characters.");
+            return;  // Stop further execution if validation fails
+        }
+    
+        // Validate if both fields are entered
+        if (!taskTitle || !taskContent) {
+            alert("Please enter both title and content for the task!");
+            return;
+        }
+    
+        // Ensure the user is created and exists
+        const userId = await getUserId();
+        if (userId === null) {
+            alert("User creation failed!");
+            return;
+        }
+    
+        // Proceed with adding the task
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title: taskTitle, description: taskContent, userId }),
+        });
+    
+        if (response.ok) {
+            taskTitleInput.value = "";
+            taskContentInput.value = "";
+            fetchTasks();
+        } else {
+            alert("Failed to add task.");
+        }
     };
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     // Delete a task
     window.deleteTask = async (id) => {
@@ -129,3 +205,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Load tasks on page load
     fetchTasks();
 });
+
+
+
+
+
+
+
+
