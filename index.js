@@ -1,67 +1,57 @@
-const inputTitle = document.querySelector('.input-title');
-const inputContent = document.querySelector('.input-content');
-const addTasks = document.querySelector('.add-task-btn');
-const taskTitle = document.querySelector('.title');
-const taskContent = document.querySelector('.description');
-const taskId = document.querySelector('.task-id');
-// console.log(inputTitle)
-// console.log(inputContent)
-// console.log(addTasks)
-// console.log(taskTitle)
-// console.log(taskContent)
-// console.log(taskId)
-// console.log(removeBtn)
+document.addEventListener("DOMContentLoaded", () => {
+    const addTaskBtn = document.getElementById("add-task-btn");
+    const taskTitleInput = document.getElementById("task-title");
+    const taskContentInput = document.getElementById("task-content");
+    const taskList = document.getElementById("task-list");
+    let taskId = 1; 
 
+    addTaskBtn.addEventListener("click", () => {
+        const taskTitle = taskTitleInput.value.trim();
+        const taskContent = taskContentInput.value.trim();
 
-
-
-const getInputValue = async (e) => {
-    if (inputTitle) {  
-        const inputValue = inputTitle.value;
-        if(!inputValue){
-            alert("Please enter both values before trying to add anything");
-            
+        if (taskTitle === "" || taskContent === "") {
+            alert("Please enter both title and content for the task!");
+            return;
         }
-        console.log(inputValue);
-    } else {
-        console.error("Element with class 'input-title' not found!");
+
+        const taskItem = document.createElement("li");
+        taskItem.setAttribute("data-aos", "fade-up");
+        taskItem.setAttribute("data-aos-duration", "1000");
+        taskItem.innerHTML = `
+            <p class="task-id">Task ID: ${taskId}</p>
+            <p class="task-title">Title: ${taskTitle}</p>
+            <p class="task-content">${taskContent}</p>
+            <button class="delete-btn">X</button>
+        `;
+
+        taskList.appendChild(taskItem);
+        taskTitleInput.value = "";
+        taskContentInput.value = "";
+        taskId++; // add id for the following taks
+
+        AOS.refresh(); // Refresh animations for newly added elements
+
+        taskItem.querySelector(".delete-btn").addEventListener("click", () => {
+            taskItem.remove();
+            reorderTaskIds(); // Reorder IDs after deletion
+        });
+    });
+
+    // Allow pressing Enter to add a task
+    taskTitleInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") addTaskBtn.click();
+    });
+
+    taskContentInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") addTaskBtn.click();
+    });
+
+    function reorderTaskIds() {
+        const taskItems = document.querySelectorAll("#task-list li");
+        taskItems.forEach((item, index) => {
+            const idElement = item.querySelector(".task-id");
+            idElement.textContent = `Task ID: ${index + 1}`;
+        });
+        taskId = taskItems.length + 1; // Reset task ID to next number
     }
-};
-function getEvents (){
-    getInputValue();
-   getInputContent()
-;}
-
-if (addTasks) {
-    addTasks.addEventListener('click', getEvents);
-} else {
-    console.error("Element with class 'add-task-btn' not found!");
-}
-
-
-const getInputContent =  () =>{
-    if(inputContent){
-        const inputContentValue = inputContent.value
-        if(!inputContentValue){
-            alert("Please enter both values before trying to add anything");
-            
-        }
-        console.log(inputContentValue)
-    }
-}
-
-
-const removeBtns = document.querySelectorAll('.btn-container'); 
-
-const removeTaskItems = (e) => {
-    const removeTaskBtn = e.target; 
-    if (removeTaskBtn.parentElement && removeTaskBtn.parentElement.parentElement.parentElement) {
-        removeTaskBtn.parentElement.parentElement.parentElement.remove();
-    }
-};
-
-removeBtns.forEach((btn) => {
-    btn.addEventListener('click', removeTaskItems);
 });
-
-    
