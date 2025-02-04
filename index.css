@@ -104,3 +104,10 @@ li {
 .delete-btn:hover {
     background: darkred;
 }
+
+@media (max-width:  768px) {
+    .container {
+        width: 400px;
+    }
+  
+}
