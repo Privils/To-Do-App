@@ -27,6 +27,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
         const pUserId = document.querySelector(".userId")
         pUserId.textContent = `user-Id: ${userId}`;
+        console.log(userId)
         return parseInt(userId, 10);
     };
 
@@ -65,6 +66,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     const addTask = async () => {
         const taskTitle = taskTitleInput.value.trim();
         const taskContent = taskContentInput.value.trim();
+      
+
+        if (taskTitle.length > 20) {
+            alert("Title should not exceed 100 characters.");
+            e.preventDefault();  
+          }
+        
+          // Check for description length
+          if (taskDescription.length > 100) {
+            alert("Description should not exceed 500 characters.");
+            e.preventDefault();
+          }
 
         if (!taskTitle || !taskContent) {
             alert("Please enter both title and content for the task!");
