@@ -63,20 +63,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     };
 
     // Add a new task
-   /* const addTask = async () => {
+   const addTask = async () => {
         const taskTitle = taskTitleInput.value.trim();
         const taskContent = taskContentInput.value.trim();
       
 
         if (taskTitle.length > 20) {
             alert("Title should not exceed 20 characters.");
-            e.preventDefault();  
           }
         
           // Check for description length
           if (taskContent.length > 100) {
             alert("Description should not exceed 100 characters.");
-            e.preventDefault();
           }
 
         if (!taskTitle || !taskContent) {
@@ -105,9 +103,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         } else {
             alert("Failed to add task.");
         }
-    };*/
+    };
 
-
+/*
     const addTask = async (e) => {
         e.preventDefault(); // Prevent form submission or page reload on button click
     
@@ -154,7 +152,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             alert("Failed to add task.");
         }
     };
-    
+    */
 
 
 
