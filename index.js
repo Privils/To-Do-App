@@ -69,13 +69,13 @@ document.addEventListener("DOMContentLoaded", async () => {
       
 
         if (taskTitle.length > 20) {
-            alert("Title should not exceed 100 characters.");
+            alert("Title should not exceed 20 characters.");
             e.preventDefault();  
           }
         
           // Check for description length
-          if (taskDescription.length > 100) {
-            alert("Description should not exceed 500 characters.");
+          if (taskContent.length > 100) {
+            alert("Description should not exceed 100 characters.");
             e.preventDefault();
           }
 
