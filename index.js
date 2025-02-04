@@ -1,57 +1,118 @@
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
     const addTaskBtn = document.getElementById("add-task-btn");
     const taskTitleInput = document.getElementById("task-title");
     const taskContentInput = document.getElementById("task-content");
     const taskList = document.getElementById("task-list");
-    let taskId = 1; 
+    const apiUrl = 'http://localhost:4000/api/tasks';
 
-    addTaskBtn.addEventListener("click", () => {
+    // Generate or retrieve user ID from Local Storage
+    const getUserId = async () => {
+        let userId = localStorage.getItem("userId");
+
+        if (!userId) {
+            userId = Math.floor(Math.random() * 1000000); // Generate numeric ID
+            localStorage.setItem("userId", userId);
+           
+
+            // Create user in the database (only if the user doesn't exist)
+            const userExists = await checkUserExists(userId);
+            if (!userExists) {
+               
+                await fetch("http://localhost:4000/api/users", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ id: userId }),
+                });
+            }
+        }
+        const pUserId = document.querySelector(".userId")
+        pUserId.textContent = `user-Id: ${userId}`;
+        return parseInt(userId, 10);
+    };
+
+    // Check if the user already exists in the database
+    const checkUserExists = async (userId) => {
+        const response = await fetch(`http://localhost:4000/api/users/${userId}`);
+        const data = await response.json();
+        return data.length > 0;
+    };
+
+    const userId = await getUserId();
+
+    // Fetch tasks for the user
+    const fetchTasks = async () => {
+        try {
+            const response = await fetch(`${apiUrl}?userId=${userId}`);
+            const data = await response.json();
+
+            taskList.innerHTML = ""; // Clear existing list
+            if (Array.isArray(data)) {
+                data.forEach(todo => {
+                    const li = document.createElement("li");
+                    li.innerHTML = `<strong>Tilte: ${todo.title}</strong> Description:  ${todo.description} 
+                         <button onclick="deleteTask(${todo.id})" id="delete-btn">Delete</button>`;
+                    taskList.appendChild(li);
+                });
+            } else {
+                console.error("No tasks found or invalid data format.");
+            }
+        } catch (error) {
+            console.error("Error fetching tasks:", error);
+        }
+    };
+
+    // Add a new task
+    const addTask = async () => {
         const taskTitle = taskTitleInput.value.trim();
         const taskContent = taskContentInput.value.trim();
 
-        if (taskTitle === "" || taskContent === "") {
+        if (!taskTitle || !taskContent) {
             alert("Please enter both title and content for the task!");
             return;
         }
 
-        const taskItem = document.createElement("li");
-        taskItem.setAttribute("data-aos", "fade-up");
-        taskItem.setAttribute("data-aos-duration", "1000");
-        taskItem.innerHTML = `
-            <p class="task-id">Task ID: ${taskId}</p>
-            <p class="task-title">Title: ${taskTitle}</p>
-            <p class="task-content">${taskContent}</p>
-            <button class="delete-btn">X</button>
-        `;
+        // Ensure the user is created and exists
+        const userId = await getUserId();
+        if (userId === null) {
+            alert("User creation failed!");
+            return;
+        }
 
-        taskList.appendChild(taskItem);
-        taskTitleInput.value = "";
-        taskContentInput.value = "";
-        taskId++; // add id for the following taks
-
-        AOS.refresh(); // Refresh animations for newly added elements
-
-        taskItem.querySelector(".delete-btn").addEventListener("click", () => {
-            taskItem.remove();
-            reorderTaskIds(); // Reorder IDs after deletion
+        // Proceed with adding the task
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title: taskTitle, description: taskContent, userId }),
         });
-    });
 
-    // Allow pressing Enter to add a task
-    taskTitleInput.addEventListener("keypress", (e) => {
-        if (e.key === "Enter") addTaskBtn.click();
-    });
+        if (response.ok) {
+            taskTitleInput.value = "";
+            taskContentInput.value = "";
+            fetchTasks();
+        } else {
+            alert("Failed to add task.");
+        }
+    };
 
-    taskContentInput.addEventListener("keypress", (e) => {
-        if (e.key === "Enter") addTaskBtn.click();
-    });
+    // Delete a task
+    window.deleteTask = async (id) => {
+        try {
+            const response = await fetch(`${apiUrl}/${id}`, { method: 'DELETE' });
+            if (response.ok) {
+                fetchTasks();
+            } else {
+                alert("Failed to delete task.");
+            }
+        } catch (error) {
+            console.error("Error deleting task:", error);
+        }
+    };
 
-    function reorderTaskIds() {
-        const taskItems = document.querySelectorAll("#task-list li");
-        taskItems.forEach((item, index) => {
-            const idElement = item.querySelector(".task-id");
-            idElement.textContent = `Task ID: ${index + 1}`;
-        });
-        taskId = taskItems.length + 1; // Reset task ID to next number
-    }
+    // Event listeners
+    addTaskBtn.addEventListener("click", addTask);
+    taskTitleInput.addEventListener("keypress", (e) => { if (e.key === "Enter") addTask(); });
+    taskContentInput.addEventListener("keypress", (e) => { if (e.key === "Enter") addTask(); });
+
+    // Load tasks on page load
+    fetchTasks();
 });
