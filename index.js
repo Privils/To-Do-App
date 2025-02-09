@@ -5,8 +5,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     const taskList = document.getElementById("task-list");
     
     // Set your live API URL or IP address here
-   // const apiUrl = 'http://localhost:4000/api/tasks'; // Change to your actual backend URL (e.g., http://example.com or local IP like http://192.168.x.x)
-   const apiUrl = "http://192.168.8.104:4000/api/tasks";
+ const apiUrl = 'http://localhost:4000/api/tasks'; 
+
 
     // Generate or retrieve user ID from Local Storage
     const getUserId = async () => {
