@@ -3,8 +3,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     const taskTitleInput = document.getElementById("task-title");
     const taskContentInput = document.getElementById("task-content");
     const taskList = document.getElementById("task-list");
-    const apiUrl = 'http://localhost:4000/api/tasks';
-
+    
+    // Set your live API URL or IP address here
+    const apiUrl = 'http://localhost:4000/api/tasks'; // Change to your actual backend URL (e.g., http://example.com or local IP like http://192.168.x.x)
+    
     // Generate or retrieve user ID from Local Storage
     const getUserId = async () => {
         let userId = localStorage.getItem("userId");
@@ -12,28 +14,27 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (!userId) {
             userId = Math.floor(Math.random() * 1000000); // Generate numeric ID
             localStorage.setItem("userId", userId);
-           
 
             // Create user in the database (only if the user doesn't exist)
             const userExists = await checkUserExists(userId);
             if (!userExists) {
-               
-                await fetch("http://localhost:4000/api/users", {
+                await fetch("http://localhost:4000/api/users", {  // Make sure to update the URL to your backend in production
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ id: userId }),
                 });
             }
         }
-        const pUserId = document.querySelector(".userId")
+
+        const pUserId = document.querySelector(".userId");
         pUserId.textContent = `user-Id: ${userId}`;
-        console.log(userId)
+        console.log(userId);
         return parseInt(userId, 10);
     };
 
     // Check if the user already exists in the database
     const checkUserExists = async (userId) => {
-        const response = await fetch(`http://localhost:4000/api/users/${userId}`);
+        const response = await fetch(`http://localhost:4000/api/users/${userId}`);  // Update URL for production
         const data = await response.json();
         return data.length > 0;
     };
@@ -50,7 +51,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (Array.isArray(data)) {
                 data.forEach(todo => {
                     const li = document.createElement("li");
-                    li.innerHTML = `<strong>Tilte: ${todo.title}</strong> Description:  ${todo.description} 
+                    li.innerHTML = `<strong>Title: ${todo.title}</strong> Description: ${todo.description} 
                          <button onclick="deleteTask(${todo.id})" id="delete-btn">Delete</button>`;
                     taskList.appendChild(li);
                 });
@@ -63,87 +64,39 @@ document.addEventListener("DOMContentLoaded", async () => {
     };
 
     // Add a new task
-   const addTask = async () => {
+    const addTask = async () => {
         const taskTitle = taskTitleInput.value.trim();
         const taskContent = taskContentInput.value.trim();
-      
 
         if (taskTitle.length > 20) {
             alert("Title should not exceed 20 characters.");
-          }
-        
-          // Check for description length
-          if (taskContent.length > 100) {
-            alert("Description should not exceed 100 characters.");
-          }
-
-        if (!taskTitle || !taskContent) {
-            alert("Please enter both title and content for the task!");
             return;
         }
 
-        // Ensure the user is created and exists
-        const userId = await getUserId();
-        if (userId === null) {
-            alert("User creation failed!");
-            return;
-        }
-
-        // Proceed with adding the task
-        const response = await fetch(apiUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title: taskTitle, description: taskContent, userId }),
-        });
-
-        if (response.ok) {
-            taskTitleInput.value = "";
-            taskContentInput.value = "";
-            fetchTasks();
-        } else {
-            alert("Failed to add task.");
-        }
-    };
-
-/*
-    const addTask = async (e) => {
-        e.preventDefault(); // Prevent form submission or page reload on button click
-    
-        const taskTitle = taskTitleInput.value.trim();
-        const taskContent = taskContentInput.value.trim();
-    
-        // Check for title length (max 20 characters)
-        if (taskTitle.length > 20) {
-            alert("Title should not exceed 20 characters.");
-            return;  // Stop further execution if validation fails
-        }
-    
-        // Check for description length (max 100 characters)
         if (taskContent.length > 100) {
             alert("Description should not exceed 100 characters.");
-            return;  // Stop further execution if validation fails
+            return;
         }
-    
-        // Validate if both fields are entered
+
         if (!taskTitle || !taskContent) {
             alert("Please enter both title and content for the task!");
             return;
         }
-    
+
         // Ensure the user is created and exists
         const userId = await getUserId();
         if (userId === null) {
             alert("User creation failed!");
             return;
         }
-    
+
         // Proceed with adding the task
         const response = await fetch(apiUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ title: taskTitle, description: taskContent, userId }),
         });
-    
+
         if (response.ok) {
             taskTitleInput.value = "";
             taskContentInput.value = "";
@@ -152,34 +105,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             alert("Failed to add task.");
         }
     };
-    */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     // Delete a task
     window.deleteTask = async (id) => {
