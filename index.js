@@ -5,7 +5,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     const taskList = document.getElementById("task-list");
     
     // Set your live API URL or IP address here
- const apiUrl = 'http://localhost:4000/api/tasks'; 
+ //const apiUrl = 'http://localhost:4000/api/tasks'; 
+ const apiUrl = 'https://privilswebdev.co.za/api/tasks';
 
 
     // Generate or retrieve user ID from Local Storage
