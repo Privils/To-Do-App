@@ -1,140 +1,77 @@
-document.addEventListener("DOMContentLoaded", async () => {
+document.addEventListener("DOMContentLoaded", () => {
     const addTaskBtn = document.getElementById("add-task-btn");
     const taskTitleInput = document.getElementById("task-title");
     const taskContentInput = document.getElementById("task-content");
     const taskList = document.getElementById("task-list");
-    
-    // Set your live API URL or IP address here
- //const apiUrl = 'http://localhost:4000/api/tasks'; 
- const apiUrl = 'https://privilswebdev.co.za/api/tasks';
 
-
-    // Generate or retrieve user ID from Local Storage
-    const getUserId = async () => {
+    // Automatically generate or retrieve user ID
+    const getUserId = () => {
         let userId = localStorage.getItem("userId");
 
         if (!userId) {
-            userId = Math.floor(Math.random() * 1000000); // Generate numeric ID
+            userId = Math.floor(Math.random() * 1000000);
             localStorage.setItem("userId", userId);
-
-            // Create user in the database (only if the user doesn't exist)
-            const userExists = await checkUserExists(userId);
-            if (!userExists) {
-                await fetch("http://localhost:4000/api/users", {  // Make sure to update the URL to your backend in production
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ id: userId }),
-                });
-            }
         }
 
-        const pUserId = document.querySelector(".userId");
-        pUserId.textContent = `user-Id: ${userId}`;
-        console.log(userId);
+        document.querySelector(".userId").textContent = `User ID: ${userId}`;
         return parseInt(userId, 10);
     };
 
-    // Check if the user already exists in the database
-    const checkUserExists = async (userId) => {
-        const response = await fetch(`http://localhost:4000/api/users/${userId}`);  // Update URL for production
-        const data = await response.json();
-        return data.length > 0;
-    };
+    // Retrieve tasks from localStorage
+    const fetchTasks = () => {
+        const userId = getUserId();
+        const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 
-    const userId = await getUserId();
+        const userTasks = tasks.filter(task => task.userId === userId);
 
-    // Fetch tasks for the user
-    const fetchTasks = async () => {
-        try {
-            const response = await fetch(`${apiUrl}?userId=${userId}`);
-            const data = await response.json();
-
-            taskList.innerHTML = ""; // Clear existing list
-            if (Array.isArray(data)) {
-                data.forEach(todo => {
-                    const li = document.createElement("li");
-                    li.innerHTML = `<strong>Title: ${todo.title}</strong> Description: ${todo.description} 
-                         <button onclick="deleteTask(${todo.id})" id="delete-btn">Delete</button>`;
-                    taskList.appendChild(li);
-                });
-            } else {
-                console.error("No tasks found or invalid data format.");
-            }
-        } catch (error) {
-            console.error("Error fetching tasks:", error);
-        }
-    };
-
-    // Add a new task
-    const addTask = async () => {
-        const taskTitle = taskTitleInput.value.trim();
-        const taskContent = taskContentInput.value.trim();
-
-        if (taskTitle.length > 20) {
-            alert("Title should not exceed 20 characters.");
-            return;
-        }
-
-        if (taskContent.length > 100) {
-            alert("Description should not exceed 100 characters.");
-            return;
-        }
-
-        if (!taskTitle || !taskContent) {
-            alert("Please enter both title and content for the task!");
-            return;
-        }
-
-        // Ensure the user is created and exists
-        const userId = await getUserId();
-        if (userId === null) {
-            alert("User creation failed!");
-            return;
-        }
-
-        // Proceed with adding the task
-        const response = await fetch(apiUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title: taskTitle, description: taskContent, userId }),
+        taskList.innerHTML = "";
+        userTasks.forEach(todo => {
+            const li = document.createElement("li");
+            li.innerHTML = `<strong>${todo.title}</strong>: ${todo.description}
+                <button onclick="deleteTask(${todo.id})">Delete</button>`;
+            taskList.appendChild(li);
         });
-
-        if (response.ok) {
-            taskTitleInput.value = "";
-            taskContentInput.value = "";
-            fetchTasks();
-        } else {
-            alert("Failed to add task.");
-        }
     };
 
-    // Delete a task
-    window.deleteTask = async (id) => {
-        try {
-            const response = await fetch(`${apiUrl}/${id}`, { method: 'DELETE' });
-            if (response.ok) {
-                fetchTasks();
-            } else {
-                alert("Failed to delete task.");
-            }
-        } catch (error) {
-            console.error("Error deleting task:", error);
+    // Add task to localStorage
+    const addTask = (event) => {
+        event.preventDefault();
+        const title = taskTitleInput.value.trim();
+        const description = taskContentInput.value.trim();
+        const userId = getUserId();
+
+        if (!title || !description) {
+            alert("Please enter task details.");
+            return;
         }
+
+        const newTask = {
+            id: Date.now(), // Use timestamp as task ID
+            title,
+            description,
+            userId
+        };
+
+        // Get existing tasks from localStorage, or initialize an empty array if none exist
+        const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+        tasks.push(newTask);
+
+        localStorage.setItem("tasks", JSON.stringify(tasks));
+
+        fetchTasks();
+        taskTitleInput.value = "";
+        taskContentInput.value = "";
     };
 
-    // Event listeners
+    // Delete task from localStorage
+    window.deleteTask = (id) => {
+        const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+        const updatedTasks = tasks.filter(task => task.id !== id);
+
+        localStorage.setItem("tasks", JSON.stringify(updatedTasks));
+        fetchTasks();
+    };
+
     addTaskBtn.addEventListener("click", addTask);
-    taskTitleInput.addEventListener("keypress", (e) => { if (e.key === "Enter") addTask(); });
-    taskContentInput.addEventListener("keypress", (e) => { if (e.key === "Enter") addTask(); });
-
-    // Load tasks on page load
     fetchTasks();
 });
-
-
-
-
-
-
-
-
